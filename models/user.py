@@ -47,6 +47,7 @@ class UserModel(db.Model):
     is_staff = db.Column(db.Boolean, nullable=True)
     join_time = db.Column(db.DateTime, default=datetime.now)
     is_admin = db.Column(db.Boolean, default=False)
+    is_active = db.Column(db.Boolean, default=True)
 
     role_id = db.Column(db.Integer, db.ForeignKey("role.id"))
     role = db.relationship("RoleModel", backref="users")

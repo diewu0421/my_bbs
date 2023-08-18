@@ -1,6 +1,10 @@
+import random
+
 import click
+from faker import Faker
 
 from exts import db
+from models.post import BoardModel, PostModel
 from models.user import PermissionEnum, PermissionModel, RoleModel, UserModel
 
 
@@ -75,3 +79,28 @@ def del_admin(username):
     db.session.delete(del_user)
     db.session.commit()
     click.echo("del ")
+
+
+def create_board():
+    board_names = ['Python语法', 'web开发', '数据分析', '测试开发', '运维开发']
+    for board in board_names:
+        board = BoardModel(name=board)
+        db.session.add(board)
+    db.session.commit()
+    click.echo("板块添加成功")
+
+
+def create_test_post():
+    fake = Faker(locale="zh_CN")
+    author = UserModel.query.first()
+    boards = BoardModel.query.all()
+    click.echo("开始生成测试帖子")
+    for x in range(98):
+        title = fake.sentence()
+        content = fake.paragraph(nb_sentences=10)
+        random_index = random.randint(0, 4)
+        board = boards[random_index]
+        post = PostModel(title=title, content=content, board=board, author=author)
+        db.session.add(post)
+    db.session.commit()
+    click.echo("测试帖子生成成功")

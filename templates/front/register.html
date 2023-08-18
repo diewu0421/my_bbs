@@ -8,11 +8,10 @@
 <link rel="stylesheet" href="{{ url_for('static',filename='front/css/sign.css') }}">
 <script src="{{ url_for('static',filename='front/js/register.js') }}"></script>
 {% endblock %}
-
 {% block body %}
 <h1 class="page-title">注册</h1>
 <div class="sign-box">
-  <form action="{{ url_for('user.register') }}" method="post">
+  <form action="{{ url_for('user.register') }}" method="post" id="register-form">
     <div class="form-group">
       <div class="input-group">
         <input type="text" class="form-control" name="email" placeholder="邮箱">
@@ -33,17 +32,22 @@
     <div class="form-group">
       <input type="password" class="form-control" name="confirm_password" placeholder="确认密码">
     </div>
+
     {% with messages = get_flashed_messages() %}
+
     {% if messages %}
     <div class="form-group">
       <ul>
         {% for message in messages %}
-        <li class="text-danger">{{ message }}</li>
+        <li class="text-danger">{{ message }} </li>
         {% endfor %}
       </ul>
     </div>
+
     {% endif %}
+
     {% endwith %}
+
     <div class="form-group">
       <button class="btn btn-warning btn-block" id="submit-btn">立即注册</button>
     </div>
@@ -51,8 +55,8 @@
       <a href="#" class="signup-link">返回登陆</a>
       <a href="#" class="resetpwd-link" style="float:right;">找回密码</a>
     </div>
+    <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
 
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   </form>
 </div>
 {% endblock %}

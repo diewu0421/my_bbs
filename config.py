@@ -1,7 +1,11 @@
+from datetime import timedelta
+
+
 class BaseConfig(object):
     SECRET_KEY = "yoasdfkj"
-
+    PER_PAGE_COUNT=10
     SQLALCHEMY_TRACK_MODIFICATION = False
+    PERMANENT_SESSION_LIFETIME = timedelta(days=1)
 
 
 class DevelopmentConfig(BaseConfig):
@@ -12,6 +16,9 @@ class DevelopmentConfig(BaseConfig):
     DATABASE = "pythonbbs"
     DATA_STR = f"mysql+pymysql://{USER_NAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8"
     SQLALCHEMY_DATABASE_URI = DATA_STR
+
+    DOWNLOAD_URL  = "static"
+    UPLOAD_URL  = "static/upload/"
 
     MAIL_SERVER = "smtp.qq.com"
     MAIL_USE_SSL = True

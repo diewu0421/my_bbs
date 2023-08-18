@@ -1,25 +1,78 @@
 import random
 
-from flask import Blueprint, render_template, request, current_app
+from flask import Blueprint, render_template, request, current_app, flash, url_for, redirect, session
 from flask_mail import Message
 
-from exts import mail, cache
+from exts import cache, db
+from forms.user import RegisterForm, LoginForm
+from models.user import UserModel
 
 bp = Blueprint("user", __name__, url_prefix="/user")
 
 BAOBEI_EMAIL = "1241307228@qq.com"
 
+
 @bp.route("register", methods=["POST", "GET"])
 def register():
-    print("start register")
+    if request.method == 'GET':
+        return render_template("front/register.html")
 
-    return render_template("front/register.html")
+    else:
+        form = RegisterForm(request.form)
+        if form.validate():
+            email = form.email.data
+            username = form.username.data
+            password = form.password.data
+            confirm_password = form.confirm_password.data
+            print(f"email = {email}, username = {username}, password={password}, confirm_password={confirm_password}")
+            user = UserModel(email=email, password=password, name=username)
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for("user.login"))
+        else:
+            for message in form.messages:
+                flash(message)
+            return redirect(url_for("user.register"))
+
+
+@bp.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        print("login get")
+        return render_template("front/login.html")
+    else:
+        form = LoginForm(request.form)
+        if form.validate():
+            email = form.email.data
+            password = form.password.data
+            remember = form.remember.data
+            print(f"email={email}, password={password}, remember={remember}")
+            user = UserModel.query.filter_by(email=email).first()
+            if user and user.check_password(password):
+                session['user_id'] = user.id
+                print('userid', session['user_id'])
+                # if remember:
+                #     session.permanent = True
+                url = url_for("front.index", name="zenglw")
+                print(f"url = {url}")
+                return redirect(url)
+
+            else:
+                flash("邮箱或者密码错误")
+                temp = url_for("user.login")
+                print("temp = ", temp)
+                return redirect(temp)
+        else:
+            print("form.messags", form.messages)
+            for message in form.messages:
+                flash(message)
+
+            return render_template("front/login.html")
 
 
 @bp.route("/mail/captcha")
 def mail_captcha():
     email = request.args.get("mail")
-    email = "1241307228@qq.com"
     print("email = ", email)
     print("从缓存中获取验证码 ", cache.get(email))
 
