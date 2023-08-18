@@ -6,6 +6,7 @@ from gevent import pywsgi
 from flask_wtf import CSRFProtect
 from flask_socketio import SocketIO
 
+from gevent import pywsgi
 
 import commands
 from bbs_celery import make_celery
@@ -13,7 +14,7 @@ from blueprints.cms import bp as cms_bp
 from blueprints.front import bp as front_bp
 from blueprints.user import bp as user_bp
 from config import DevelopmentConfig
-from exts import db, mail, cache
+from exts import db, mail, cache,csrf
 # from bbs_celery import make_celery
 import models.post
 import hooks
@@ -25,7 +26,6 @@ from tasks.my_tasks import hh
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 
-socketio = SocketIO(app)
 
 app.logger.setLevel(logging.INFO)
 file_handler = logging.FileHandler("build.log", encoding="utf-8")
@@ -61,14 +61,17 @@ with app.app_context():
     app.errorhandler(404)(hooks.bbs_404_error)
 
 
+    csrf.init_app(app)
 
     print("app id ",id(app), id(current_app), "celery", current_app.celery, "   111 ", app.celery )
 
+@app.template_filter('custom_filter')
+def custom_filter(str):
+    return str +"_____"
 # @app.route("/register")
 # def register():
 #     print("register")
 #     return render_template("front/register.html")
-CSRFProtect(app)
 
 
 @app.route("/test_celery", methods=["GET"])
@@ -82,7 +85,10 @@ def test_celery():
 from models.file import ApkInfoModel
 # celery = make_celery(app)
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=80, debug=True)
+    app.run( debug=False,host="0.0.0.0", port=80)
     # socketio.run(app, host = "0.0.0.0", port=80, debug=True)
+    # server = pywsgi.WSGIServer(('0.0.0.0', 80), app)
+    # server.serve_forever()
+
     # server = pywsgi.WSGIServer(('0.0.0.0', 80), app)
     # server.serve_forever()

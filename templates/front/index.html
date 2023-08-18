@@ -57,5 +57,11 @@
                 <input type="submit" value="提交">
             </form>
         </div>
+
+        <div>{{'nihao' | custom_filter}}</div>
+<!--        <div>{{ '%s,%s' | format(name,current_board) }}</div>-->
+<!--        <div>{{ '23'}}</div>-->
+<!--        <div>{{ name | join('|1|')}}</div>-->
+        <div>{{ name | length }}</div>
     </div>
 {% endblock %}

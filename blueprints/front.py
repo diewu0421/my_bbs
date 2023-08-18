@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 import time
 from datetime import datetime
 from decorators import login_required
-from exts import db
+from exts import db,csrf
 from forms.UploadFileForm import UploadFileForm
 from forms.post import PublicPostForm
 from models.post import BoardModel, PostModel, CommentModel
@@ -58,6 +58,7 @@ async def index():
     pagination = Pagination(bs_version=4, page=page, total=total, outer_window=0, inner_window=2, alignment="center")
 
     context = {
+        "name": ("z11", '22',),
         "posts": posts,
         "boards": boards,
         "pagination": pagination,
@@ -103,11 +104,13 @@ def public_post():
 
 
 @bp.post("/upload_file")
+@csrf.exempt
 def upload_file():
 
     form= UploadFileForm(request.files)
 
     file = form.file.data
+    current_app.logger.error(f"file {file}")
     if file:
         filename = file.filename
         current_app.logger.info(f"filename {filename}")
@@ -123,7 +126,7 @@ def upload_file():
 @bp.route("/get_apk/<version>")
 async def get_apk(version):
     apks = db.session.execute(select(ApkInfoModel).filter_by(version=version)).scalars().all()
-    return str(apks[0].join_time) + "111111"
+    return str(apks[0].join_time) + "11111221"
 
 
 @bp.route("/download/<string:filename>")
