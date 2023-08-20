@@ -19,6 +19,7 @@ class DevelopmentConfig(BaseConfig):
 
     DOWNLOAD_URL  = "static/media"
     UPLOAD_URL  = "static/upload/"
+    JSON_AS_ASCII = False
 
     MAIL_SERVER = "smtp.qq.com"
     MAIL_USE_SSL = True
