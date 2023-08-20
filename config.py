@@ -17,7 +17,7 @@ class DevelopmentConfig(BaseConfig):
     DATA_STR = f"mysql+pymysql://{USER_NAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8"
     SQLALCHEMY_DATABASE_URI = DATA_STR
 
-    DOWNLOAD_URL  = "static"
+    DOWNLOAD_URL  = "static/media"
     UPLOAD_URL  = "static/upload/"
 
     MAIL_SERVER = "smtp.qq.com"

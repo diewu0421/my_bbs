@@ -11,8 +11,9 @@ from gevent import pywsgi
 import commands
 from bbs_celery import make_celery
 from blueprints.cms import bp as cms_bp
-from blueprints.front import bp as front_bp
+from blueprints.front import bp as front_bp, get_ip, test_get_ip
 from blueprints.user import bp as user_bp
+from blueprints.media import bp as media_bp
 from config import DevelopmentConfig
 from exts import db, mail, cache,csrf
 # from bbs_celery import make_celery
@@ -53,17 +54,25 @@ with app.app_context():
     app.register_blueprint(user_bp)
     app.register_blueprint(front_bp)
     app.register_blueprint(cms_bp)
+    app.register_blueprint(media_bp)
     celery= make_celery(app)
     from flask import current_app
 
     app.jinja_env.is_async = True
     app.jinja_env.globals['get_html'] = get_html
+    app.jinja_env.globals['get_ip'] = get_ip
+    app.jinja_env.globals['test_get_ip'] = test_get_ip
     app.errorhandler(404)(hooks.bbs_404_error)
 
 
     csrf.init_app(app)
 
     print("app id ",id(app), id(current_app), "celery", current_app.celery, "   111 ", app.celery )
+
+
+@app.template_filter("datetime_format")
+def datetime_format(value, format = "%Y-%d-%m %H:%M:%S"):
+    return value.strftime(format)
 
 @app.template_filter('custom_filter')
 def custom_filter(str):

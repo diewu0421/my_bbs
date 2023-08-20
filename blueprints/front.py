@@ -1,22 +1,22 @@
-import logging
+import asyncio
+import json
+import os
+import time
+from datetime import datetime
 
-from flask import Blueprint, render_template, session, request, current_app, flash, redirect, url_for, g,send_from_directory
+import aiohttp
+from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for, g, send_from_directory
 from flask_paginate import Pagination
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_session
 from werkzeug.utils import secure_filename
 
-import time
-from datetime import datetime
-from decorators import login_required
-from exts import db,csrf
+from exts import db, csrf, cache
 from forms.UploadFileForm import UploadFileForm
 from forms.post import PublicPostForm
-from models.post import BoardModel, PostModel, CommentModel
-from models.user import UserModel
 from models.file import ApkInfoModel
+from models.post import BoardModel, PostModel, CommentModel
 from utils import restful
-import os
 
 bp = Blueprint("front", __name__, url_prefix="")
 
@@ -59,6 +59,7 @@ async def index():
 
     context = {
         "name": ("z11", '22',),
+        "cur_time": datetime.now(),
         "posts": posts,
         "boards": boards,
         "pagination": pagination,
@@ -102,12 +103,10 @@ def public_post():
         return "nihao"
 
 
-
 @bp.post("/upload_file")
 @csrf.exempt
 def upload_file():
-
-    form= UploadFileForm(request.files)
+    form = UploadFileForm(request.files)
 
     file = form.file.data
     current_app.logger.error(f"file {file}")
@@ -123,17 +122,66 @@ def upload_file():
     return f"nihao {form.file.data}"
 
 
+async def get_ip():
+    ip_address = cache.get("ip_address")
+    if ip_address:
+        return ip_address
+
+    start = time.time()
+    url = "http://ip-api.com/json"
+    print("start = ", start)
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            ip = json.loads(await res.text())['query']
+            print("ip = ", ip, "cost time = ", time.time() - start)
+
+            cache.set("ip_address", ip, timeout=100)
+            return ip
+
+from concurrent.futures import ProcessPoolExecutor
+
+async def test_get_ip():
+    start = time.time()
+    print("test_get_ip ", start)
+    tasks = []
+    for i in range(0, 5):
+        tasks.append(get_ip())
+    ips = await asyncio.gather(*tasks)
+    print("ips ", ips, "cost time ", time.time() - start)
+    return ips
+
 @bp.route("/get_apk/<version>")
 async def get_apk(version):
     apks = db.session.execute(select(ApkInfoModel).filter_by(version=version)).scalars().all()
     return str(apks[0].join_time) + "11111221"
 
 
+@bp.route("/update_apk/<string:package_name>")
+async def update_apk(package_name):
+    apks = db.session.execute(
+        select(ApkInfoModel).filter_by(package_name=package_name).order_by(ApkInfoModel.version.desc())).scalars().all()
+    data = None
+    if apks and len(apks) >= 1:
+        apk = apks[0]
+        ip = await get_ip()
+        filename = secure_filename(apk.name)
+        print("filename ", filename)
+        data = {
+            "version": apk.version,
+            "name": apk.name,
+            "download_url": f"{ip}{url_for('front.download_file', filename=filename)}",
+        }
+        return restful.ok(data=data)
+
+    return restful.ok(message="no apk info!", data=data)
+
+
 @bp.route("/download/<string:filename>")
 def download_file(filename):
-    is_file = os.path.isfile(os.path.join(current_app.config['DOWNLOAD_URL'] + "/media", filename))
-    current_app.logger.debug(f"is_file {is_file}")
+    file = os.path.join(current_app.config['DOWNLOAD_URL'], filename)
+    is_file = os.path.isfile(file)
+    current_app.logger.info(f"is_file {is_file}, {file}")
     if is_file:
-        return send_from_directory(current_app.config['DOWNLOAD_URL'] + '/media', filename, as_attachment=True)
+        return send_from_directory(current_app.config['DOWNLOAD_URL'], filename, as_attachment=True)
 
     return "不是文件"

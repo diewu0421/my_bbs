@@ -49,7 +49,6 @@
         </div>
 
         <div class="list-group">
-            {{ get_html('http://39.106.72.90/') }}
             <form action="{{ url_for('front.upload_file') }}" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -63,5 +62,8 @@
 <!--        <div>{{ '23'}}</div>-->
 <!--        <div>{{ name | join('|1|')}}</div>-->
         <div>{{ name | length }}</div>
+<!--        <div>您的ip地址为：{{ get_ip() |custom_filter }}</div>-->
+        <div>ips {{ test_get_ip() }}</div>
+        <div>{{ cur_time | datetime_format}}</div>
     </div>
 {% endblock %}

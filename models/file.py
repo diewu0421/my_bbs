@@ -8,3 +8,5 @@ class ApkInfoModel(db.Model):
     name = db.Column(db.String(100), nullable=False, )
     version =db.Column(db.String(10), nullable=False, )
     join_time = db.Column(db.DateTime, default=datetime.now)
+    package_name = db.Column(db.String(20), nullable=True)
+

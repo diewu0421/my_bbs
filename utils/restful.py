@@ -15,8 +15,7 @@ class HttpCode(object):
 
 
 def _restful_result(code, message, data):
-    return {'message': message or "", "data": data or {}}, code
-
+    return jsonify({'message': message or "", "data": data or {}, "code" : code})
 
 def ok(message=None, data=None):
     return _restful_result(code=HttpCode.ok, message=message, data=data)

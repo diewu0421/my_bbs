@@ -5,5 +5,5 @@ from forms.baseforms import BaseForm
 
 
 class UploadFileForm(BaseForm):
-    file = FileField(validators=[FileAllowed(['jpg', 'png','mp4', 'webp', 'mp3', 'jpeg'])])
+    file = FileField(validators=[FileAllowed(['jpg', 'png','mp4', 'webp', 'mp3', 'jpeg', 'apk'])])
 
