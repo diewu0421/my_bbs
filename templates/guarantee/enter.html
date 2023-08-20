@@ -19,6 +19,8 @@
     <form action="{{ url_for('guarantee.enter') }}" method="post" id="register-form" enctype="multipart/form-data">
 
         <div class="form-group">
+            <span class="">*</span>
+            保函编号
             <input type="text" class="form-control" name="gua_number" placeholder="例如：HY2023072580"
                    value="{{ gua_number }}">
         </div>
