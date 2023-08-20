@@ -14,6 +14,7 @@ from blueprints.cms import bp as cms_bp
 from blueprints.front import bp as front_bp, get_ip, test_get_ip
 from blueprints.user import bp as user_bp
 from blueprints.media import bp as media_bp
+from blueprints.guarantee import bp as guarantee_bp
 from config import DevelopmentConfig
 from exts import db, mail, cache,csrf
 # from bbs_celery import make_celery
@@ -50,11 +51,12 @@ with app.app_context():
     mail.init_app(app)
     cache.init_app(app)
 
-    print('register ', user_bp)
+    print('register ', user_bp, guarantee_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(front_bp)
     app.register_blueprint(cms_bp)
     app.register_blueprint(media_bp)
+    app.register_blueprint(guarantee_bp)
     celery= make_celery(app)
     from flask import current_app
 
@@ -91,7 +93,7 @@ def test_celery():
     return "test_celery"
 
 
-from models.file import ApkInfoModel
+
 # celery = make_celery(app)
 if __name__ == '__main__':
     app.run( debug=False,host="0.0.0.0", port=80)

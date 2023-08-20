@@ -1,7 +1,9 @@
 from wtforms import Form
 
+from flask_wtf import FlaskForm
 
-class BaseForm(Form):
+
+class BaseForm(FlaskForm):
     @property
     def messages(self):
         message_list = []
@@ -10,4 +12,3 @@ class BaseForm(Form):
                 message_list.extend(errors)
 
         return message_list
-

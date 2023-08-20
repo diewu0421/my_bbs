@@ -1,0 +1,66 @@
+{% extends 'front/base.html' %}
+
+{% block title %}
+保函录入
+{% endblock %}
+
+{% block top_title %}
+保函录入
+{% endblock %}
+
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static',filename='guarantee/css/sign.css') }}">
+<script src="{{ url_for('static',filename='guarantee/js/register.js') }}"></script>
+{% endblock %}
+{% block body %}
+<h1 class="page-title">保函录入</h1>
+<div class="sign-box">
+    <form action="{{ url_for('guarantee.enter') }}" method="post" id="register-form">
+
+        <div class="form-group">
+            <input type="text" class="form-control" name="gua_number" placeholder="例如：HY2023072580"
+                   value="{{ gua_number }}">
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="amount" placeholder="请输入金额" value="{{ amount }}">
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="warrantee" placeholder="请输入被保证人的名称"
+                   value="{{ warrantee }}">
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="beneficiary" placeholder="请输入受益人的名称"
+                   value="{{ beneficiary }}">
+        </div>
+        <div class="form-group">
+            <input type="number" class="form-control" name="query_code" placeholder="请输入查询码" value="{{ query_code }}">
+        </div>
+        <div class="form-group">
+            <input type="file" class="form-control" name="gua_pic" accept="image/jpeg, image/png, image/jpg">
+        </div>
+        <div class="form-group">
+            <input type="submit" class="form-control" value="录入">
+        </div>
+
+
+        {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+        <div class="form-group">
+            <ul>
+                {% for message in messages %}
+                <li class="text-danger">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        {% endif %}
+
+        {% endwith %}
+
+        <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+
+    </form>
+</div>
+{% endblock %}

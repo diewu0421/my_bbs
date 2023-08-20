@@ -1,4 +1,4 @@
-from wtforms import StringField, ValidationError, BooleanField
+from wtforms import StringField, ValidationError, BooleanField, FloatField
 from wtforms.validators import email, length, equal_to
 
 from exts import cache
