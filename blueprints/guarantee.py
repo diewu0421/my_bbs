@@ -7,11 +7,12 @@ from werkzeug.utils import secure_filename
 
 from forms.guarantee import GuaranteeForm
 from utils import restful
-from exts import db
+from exts import db, csrf
 from models.guarantee import GuaranteeModel
 
 bp = Blueprint("guarantee", __name__ , url_prefix="/guarantee")
 @bp.route("/enter", methods=["GET", "POST"])
+@csrf.exempt
 def enter():
     if request.method == "GET":
         # print("gua ", request.args.get("gua_number", type=str, default=""))
@@ -28,10 +29,10 @@ def enter():
         warrantee = form.warrantee.data
         beneficiary = form.beneficiary.data
         query_code = form.query_code.data
-        gua_pic = form.gua_pic.data
         if form.validate():
+            gua_pic = form.gua_pic.data
 
-            filename = secure_filename(gua_pic)
+            filename = secure_filename(gua_pic.filename)
 
             gua_pic_save_path = os.path.join(current_app.config["UPLOAD_URL"], filename)
             gua_pic.save(gua_pic_save_path)
@@ -49,5 +50,5 @@ def enter():
         else:
             for message in form.messages:
                 flash(message)
-            return redirect(url_for("guarantee.enter", gua_number=gua_number, amount =amount, warrantee =warrantee, beneficiary = beneficiary, query_code=query_code, gua_pic=gua_pic))
+            return redirect(url_for("guarantee.enter", gua_number=gua_number, amount =amount, warrantee =warrantee, beneficiary = beneficiary, query_code=query_code))
 

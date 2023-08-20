@@ -16,6 +16,8 @@ from forms.UploadFileForm import UploadFileForm
 from forms.post import PublicPostForm
 from models.file import ApkInfoModel
 from models.post import BoardModel, PostModel, CommentModel
+from models.guarantee import GuaranteeModel
+
 from utils import restful
 
 bp = Blueprint("front", __name__, url_prefix="")
@@ -63,7 +65,8 @@ async def index():
         "posts": posts,
         "boards": boards,
         "pagination": pagination,
-        "current_board": board_id
+        "current_board": board_id,
+        "guarantee_url":GuaranteeModel.query.first().gua_pic
     }
 
     return render_template("front/index.html", **context)

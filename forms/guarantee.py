@@ -6,7 +6,6 @@ from forms.baseforms import BaseForm
 
 
 class GuaranteeForm(BaseForm):
-    __tablename__ = "guarantee"
     gua_number = StringField(validators=[input_required(message="请输入保函编号")])
     amount = FloatField(validators=[input_required(message="请输入正确金额")])
     warrantee = StringField(validators=[input_required(message="请输入被保证人")])

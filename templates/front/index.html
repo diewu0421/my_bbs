@@ -65,5 +65,6 @@
 <!--        <div>您的ip地址为：{{ get_ip() |custom_filter }}</div>-->
         <div>ips {{ test_get_ip() }}</div>
         <div>{{ cur_time | datetime_format}}</div>
+        <img src="{{url_for('static',filename=guarantee_url)}}" alt="">
     </div>
 {% endblock %}
